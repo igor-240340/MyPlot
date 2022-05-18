@@ -1,26 +1,33 @@
 #include "pch.h"
 #include "MyPlot.h"
 #include "matplotlibcpp.h"
+#include "windows.h"
 
 namespace plt = matplotlibcpp;
 
-std::map<std::string, std::string> keywords{ {"color", "C1"}, /*{"scale", "1"},*/ {"scale_units", "xy"}};
+bool plot(const float* x, const float* y, int xySize, const KeywordValue* kw, int kwSize) {
+	//AllocConsole();
+	//freopen_s((FILE**)stdout, "CONOUT$", "w", stdout);
 
-void plot(Vector3* particlePos, Vector3* particleVel, int particleCount) {
-	std::vector<float> posX;
-	std::vector<float> posY;
+	std::vector<double> xVector;
+	xVector.assign(x, x + xySize);
 
-	std::vector<float> velX;
-	std::vector<float> velY;
+	std::vector<double> yVector;
+	yVector.assign(y, y + xySize);
 
-	for (int i = 0; i < particleCount; i++) {
-		posX.push_back(particlePos[i].x);
-		posY.push_back(particlePos[i].y);
+	/*for (int i = 0; i < xySize; i++) 
+		std::cout << x[i] << "," << y[i] << "\n";
+	}*/
 
-		velX.push_back(particleVel[i].x);
-		velY.push_back(particleVel[i].y);
+	std::map<std::string, std::string> kwMap;
+	for (int i = 0; i < kwSize; i++) {
+		kwMap.insert(std::pair<std::string, std::string>(kw[i].keyword, kw[i].value));
+		//std::cout << kw[i].keyword << "," << kw[i].value;
 	}
-	plt::scatter(posX, posY);
-	plt::quiver(posX, posY, velX, velY, keywords);
-	plt::show();
+
+	return plt::plot(xVector, yVector, kwMap);
+}
+
+void show(const bool block) {
+	plt::show(block);
 }
