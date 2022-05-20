@@ -3,6 +3,8 @@
 #include "matplotlibcpp.h"
 #include <thread>
 #include "processthreadsapi.h"
+#include <mutex>
+#include <queue>
 
 namespace plt = matplotlibcpp;
 
@@ -12,9 +14,12 @@ std::vector<double> x = { 0.0f };
 std::vector<double> y = { 0.0f };
 
 std::function<void()> callMeLater;
+std::queue<std::function<void()>> cachedFuncs;
 
 DWORD dwThreadId;
 HANDLE hThread;
+
+std::mutex cachedFuncsMutex;
 
 std::vector<double> floatArrayToVector(const float* arr, int size) {
 	std::vector<double> v;
@@ -37,9 +42,15 @@ bool plot(const float* x, const float* y, int xySize, const KeywordValue* kw, in
 
 	std::map<std::string, std::string> kwMap = kwToKwMap(kw, kwSize);
 
-	callMeLater = [xVector, yVector, kwMap]() {
-		plt::plot(xVector, yVector, kwMap);
-	};
+	//std::lock_guard<std::mutex> guard(cacheMutex);
+	//if (cachedFuncsMutex.try_lock()) {
+		auto cachedCall = [xVector, yVector, kwMap]() {
+			std::cout << "plt::plot()\n";
+			plt::plot(xVector, yVector, kwMap);
+		};
+		cachedFuncs.push(cachedCall);
+		//cachedFuncsMutex.unlock();
+	//}
 
 	return true;
 }
@@ -49,7 +60,17 @@ void show(const bool block) {
 }
 
 void clf() {
-	plt::clf();
+	cachedFuncsMutex.lock();
+	
+	std::queue<std::function<void()>> empty;
+	std::swap(cachedFuncs, empty);
+
+	cachedFuncs.push([]() {
+		std::cout << "plt::clf()\n";
+		plt::clf();
+	});
+
+	cachedFuncsMutex.unlock();
 }
 
 bool scatter(const float* x, const float* y, int xySize, const KeywordValue* kw, int kwSize, const float s) {
@@ -58,10 +79,18 @@ bool scatter(const float* x, const float* y, int xySize, const KeywordValue* kw,
 
 	std::map<std::string, std::string> kwMap = kwToKwMap(kw, kwSize);
 
-	callMeLater = [xVector, yVector, s, kwMap]() {
-		plt::scatter(xVector, yVector, s, kwMap);
-	};
+	std::cout << "scatter()\n";
+	//std::lock_guard<std::mutex> guard(cachedFuncsMutex);
+	//if (cachedFuncsMutex.try_lock()) {
+		auto cachedCall = [xVector, yVector, s, kwMap]() {
+			std::cout << "plt::scatter()\n";
+			plt::scatter(xVector, yVector, s, kwMap);
+		};
+		cachedFuncs.push(cachedCall);
+		//cachedFuncsMutex.unlock();
+	//}
 
+	return true;
 	//plt::scatter(xVector, yVector, s, kwMap);
 }
 
@@ -70,24 +99,26 @@ void pause(float interval) {
 }
 
 void callCached() {
-	std::cout << "callCached\n";
-	callMeLater();
-	show();
-}
+	while (1) {
+		//std::lock_guard<std::mutex> guard(cachedFuncsMutex);
+		//if (cachedFuncsMutex.try_lock()) {
+		if (!cachedFuncs.empty()) {
+			if (cachedFuncsMutex.try_lock()) {
+				while (!cachedFuncs.empty()) {
+					auto f = cachedFuncs.front();
+					f();
+					cachedFuncs.pop();
+				};
+				cachedFuncsMutex.unlock();
+			}
+		}
+			//cachedFuncsMutex.unlock();
+		//}
 
-int MyHook() {
-	std::cout << "MyHook\n";
-	return 0;
+		plt::pause(0.01);
+	}
 }
 
 void runInThread() {
 	t = std::thread(callCached);
-}
-
-void update(double a, double b) {
-	x.clear();
-	x.push_back(a);
-
-	y.clear();
-	y.push_back(b);
 }
