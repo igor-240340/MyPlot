@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\vcpkg.D.Dev.GitHub.vcpkg.1.0.0\build\native\vcpkg.D.Dev.GitHub.vcpkg.props" Condition="Exists('..\packages\vcpkg.D.Dev.GitHub.vcpkg.1.0.0\build\native\vcpkg.D.Dev.GitHub.vcpkg.props')" />
+  <Import Project="..\packages\vcpkg.E.dev.GitHub.vcpkg.1.0.0\build\native\vcpkg.E.dev.GitHub.vcpkg.props" Condition="Exists('..\packages\vcpkg.E.dev.GitHub.vcpkg.1.0.0\build\native\vcpkg.E.dev.GitHub.vcpkg.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -184,13 +184,13 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\vcpkg.D.Dev.GitHub.vcpkg.1.0.0\build\native\vcpkg.D.Dev.GitHub.vcpkg.targets" Condition="Exists('..\packages\vcpkg.D.Dev.GitHub.vcpkg.1.0.0\build\native\vcpkg.D.Dev.GitHub.vcpkg.targets')" />
+    <Import Project="..\packages\vcpkg.E.dev.GitHub.vcpkg.1.0.0\build\native\vcpkg.E.dev.GitHub.vcpkg.targets" Condition="Exists('..\packages\vcpkg.E.dev.GitHub.vcpkg.1.0.0\build\native\vcpkg.E.dev.GitHub.vcpkg.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\vcpkg.D.Dev.GitHub.vcpkg.1.0.0\build\native\vcpkg.D.Dev.GitHub.vcpkg.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\vcpkg.D.Dev.GitHub.vcpkg.1.0.0\build\native\vcpkg.D.Dev.GitHub.vcpkg.props'))" />
-    <Error Condition="!Exists('..\packages\vcpkg.D.Dev.GitHub.vcpkg.1.0.0\build\native\vcpkg.D.Dev.GitHub.vcpkg.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\vcpkg.D.Dev.GitHub.vcpkg.1.0.0\build\native\vcpkg.D.Dev.GitHub.vcpkg.targets'))" />
+    <Error Condition="!Exists('..\packages\vcpkg.E.dev.GitHub.vcpkg.1.0.0\build\native\vcpkg.E.dev.GitHub.vcpkg.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\vcpkg.E.dev.GitHub.vcpkg.1.0.0\build\native\vcpkg.E.dev.GitHub.vcpkg.props'))" />
+    <Error Condition="!Exists('..\packages\vcpkg.E.dev.GitHub.vcpkg.1.0.0\build\native\vcpkg.E.dev.GitHub.vcpkg.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\vcpkg.E.dev.GitHub.vcpkg.1.0.0\build\native\vcpkg.E.dev.GitHub.vcpkg.targets'))" />
   </Target>
 </Project>
